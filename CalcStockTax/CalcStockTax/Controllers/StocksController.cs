@@ -13,19 +13,18 @@ namespace GetStockSRV.Controllers
         static readonly HttpClient client = new HttpClient();
 
         [HttpGet]
-        public async Task<ActionResult<Candles>> Get()
+        public async Task<ActionResult<RootobjectJSON>> Get()
         {
             // Call asynchronous network methods in a try/catch block to handle exceptions.
             try
             {
                 //HttpResponseMessage response = await client.GetAsync("https://iss.moex.com/iss/engines/stock/markets/foreignshares/boards/FQBR/securities.xml?iss.dp=comma&iss.meta=off&iss.only=securities");
-                HttpResponseMessage response = await client.GetAsync("http://iss.moex.com/iss/engines/stock/markets/shares/securities/SBER/candles.json?from=2022-05-25&till=2022-05-25&interval=10&iss.reverse=true");
-                response.EnsureSuccessStatusCode();
-                string responseBody = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage responseHttp = await client.GetAsync("http://iss.moex.com/iss/engines/stock/markets/shares/securities/SBER/candles.json?from=2022-05-25&till=2022-05-25&interval=10&iss.reverse=true");
+                responseHttp.EnsureSuccessStatusCode();
+                string responseBody = await responseHttp.Content.ReadAsStringAsync();
 
-                var test = JsonSerializer.Deserialize<Candles>(responseBody);
+                RootobjectJSON? response = JsonSerializer.Deserialize<RootobjectJSON>(responseBody);
 
-                //Candles? result = JsonSerializer.Deserialize<Candles>(responseBody);
             }
             catch (HttpRequestException e)
             {

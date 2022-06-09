@@ -1,26 +1,77 @@
 ﻿namespace GetStockSRV.Models
 {
-    public class Candles
-    {         
-        //public Dictionary<int,string> Columns { get; set; }
-        public Metadata[] Data { get; set; }
+    public class RootobjectJSON
+    {
+        public Candles candles { get; set; }
+    }
 
+    public class Candles
+    {
+        public Metadata metadata { get; set; }
+        public string[] columns { get; set; }
+        public object[][] data { get; set; }
     }
 
     public class Metadata
     {
-        public double[] Open { get; set; }
-        public double[] Close { get; set; }
-        public double[] High { get; set; }
-        public double[] Low { get; set; }
-        public double[] Value { get; set; }
-        public double[] Volume { get; set; }
-        public DateTime[] Begin { get; set; }
-        public DateTime[] End { get; set; }
+        public Open open { get; set; }
+        public Close close { get; set; }
+        public High high { get; set; }
+        public Low low { get; set; }
+        public Value value { get; set; }
+        public Volume volume { get; set; }
+        public Begin begin { get; set; }
+        public End end { get; set; }
     }
 
-    public class Columns
+    public class Open
     {
-        public string[]? Name { get; set; }
+        public string type { get; set; }
     }
+
+    public class Close
+    {
+        public string type { get; set; }
+    }
+
+    public class High
+    {
+        public string type { get; set; }
+    }
+
+    public class Low
+    {
+        public string type { get; set; }
+    }
+
+    public class Value
+    {
+        public string type { get; set; }
+    }
+
+    public class Volume
+    {
+        public string type { get; set; }
+    }
+
+    public class Begin
+    {
+        public string type { get; set; }
+        public int bytes { get; set; }
+        public int max_size { get; set; }
+    }
+
+    public class End
+    {
+        public string type { get; set; }
+        public int bytes { get; set; }
+        public int max_size { get; set; }
+    }
+    namespace GetStockSRV.Models
+    {
+        public class TestClass
+        {
+        }
+    }
+
 }
