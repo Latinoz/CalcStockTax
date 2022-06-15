@@ -1,6 +1,6 @@
 ﻿namespace GetStockSRV.Models
 {
-    public class RootobjectJSON
+    public class StockJSON
     {
         public Candles candles { get; set; }
     }
@@ -66,12 +66,6 @@
         public string type { get; set; }
         public int bytes { get; set; }
         public int max_size { get; set; }
-    }
-    namespace GetStockSRV.Models
-    {
-        public class TestClass
-        {
-        }
-    }
+    }    
 
 }

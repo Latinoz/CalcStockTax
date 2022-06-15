@@ -13,26 +13,42 @@ namespace GetStockSRV.Controllers
         static readonly HttpClient client = new HttpClient();
 
         [HttpGet]
-        public async Task<ActionResult<RootobjectJSON>> Get()
+        public async Task<ActionResult<StockJSON>> Get()
         {
+            string sber = "SBER";
+            string amd = "AMD";
+            string microsoft = "MSFT";
+            string apple = "AAPL";
+
+            DateTime from = new DateTime(2022,05,25);
+            DateTime timeNow = DateTime.Now;            
+            string pattern = "yyyy-MM-dd";
+
+            int interval = 10;
+
+            bool reverse = true;
+
             // Call asynchronous network methods in a try/catch block to handle exceptions.
             try
-            {
-                //HttpResponseMessage response = await client.GetAsync("https://iss.moex.com/iss/engines/stock/markets/foreignshares/boards/FQBR/securities.xml?iss.dp=comma&iss.meta=off&iss.only=securities");
-                HttpResponseMessage responseHttp = await client.GetAsync("http://iss.moex.com/iss/engines/stock/markets/shares/securities/SBER/candles.json?from=2022-05-25&till=2022-05-25&interval=10&iss.reverse=true");
+            {   
+                string linehttp = string.Format("http://iss.moex.com/iss/engines/stock/markets/shares/securities/{0}/candles.json?from={1}&till={1}&interval={2}&iss.reverse={3}", sber, from.ToString(pattern), interval.ToString(),reverse.ToString());
+
+                HttpResponseMessage responseHttp = await client.GetAsync(linehttp);
                 responseHttp.EnsureSuccessStatusCode();
                 string responseBody = await responseHttp.Content.ReadAsStringAsync();
 
-                RootobjectJSON? response = JsonSerializer.Deserialize<RootobjectJSON>(responseBody);
+                StockJSON? response = JsonSerializer.Deserialize<StockJSON>(responseBody);
+
+                return Ok(response);
 
             }
             catch (HttpRequestException e)
             {
                 Console.WriteLine("\nException Caught!");
                 Console.WriteLine("Message :{0} ", e.Message);
-            }
 
-            return null;
+                return BadRequest(e.Message);
+            }
             
         }
     }
