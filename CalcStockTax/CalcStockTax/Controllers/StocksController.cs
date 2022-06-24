@@ -1,6 +1,8 @@
 ﻿using GetStockSRV.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using System.Collections;
+using System.Linq;
 using System.Text.Json;
 
 
@@ -14,7 +16,7 @@ namespace GetStockSRV.Controllers
         static readonly HttpClient client = new HttpClient();
 
         [HttpGet]
-        public async Task<ActionResult<OutJSON>> GetMskStockExch()
+        public async Task<List<ListStocks>> GetMskStockExch()
         {
 
             DateTime dateFrom = new DateTime(2022, 06, 15);
@@ -25,10 +27,17 @@ namespace GetStockSRV.Controllers
             bool reverse = true;
 
             string sber = "SBER";
-            //string yandex = "YNDX";
-            //string amd = "AMD";
-            //string microsoft = "MSFT";
-            //string apple = "AAPL";           
+            string yandex = "YNDX";
+            string amd = "AMD";
+            string microsoft = "MSFT";
+            string apple = "AAPL";
+
+            List<string> listStk = new List<string>();
+            listStk.Add(sber);
+            listStk.Add(yandex);
+            listStk.Add(amd);
+            listStk.Add(microsoft);
+            listStk.Add(apple);
 
             string request = string.Format("http://iss.moex.com/iss/engines/stock/markets/shares/securities/{0}/candles.json?from={1}&till={1}&interval={2}&iss.reverse={3}", sber, dateFrom.ToString(pattern), interval.ToString(), reverse.ToString());
 
@@ -49,13 +58,71 @@ namespace GetStockSRV.Controllers
 
                 OutJSON? response = JsonSerializer.Deserialize<OutJSON>(responseBody);
 
-                JObject o = JObject.Parse(responseBody);
 
-                var SBER_value = (string)o["data"];
+                //Dictionary<string, int?> keyValuePairs = new Dictionary<string, int?>();
 
-                return Ok(response);
+                
+                object[][] responseObj = response.marketdata.data;
 
-                //return null;
+                List<ListStocks> list = new List<ListStocks>();
+
+                List<ListStocks> resultList = new List<ListStocks>();
+
+
+                foreach (object[]? item in responseObj) 
+                {
+                    List<object> listObj = item.ToList();
+
+                    string? _name;
+
+                    string? _value;
+
+                    if (listObj.ElementAt(0) == null)
+                    {
+                        _name = null;
+                    }
+                    else
+                    {
+                        _name = listObj.ElementAt(0).ToString();
+                    }
+
+
+                    if (listObj.ElementAt(1) == null)
+                    {
+                        _value = null;
+                    }
+                    else
+                    {
+                        _value = listObj.ElementAt(1).ToString();
+                    }
+                    
+
+                    list.Add(new ListStocks() { NameStock = _name, ValueStock = _value });                        
+
+                }
+
+                List<ListStocks>? q = new List<ListStocks>();
+
+                foreach (var item in listStk)
+                {
+                    
+                    q = list.Where(x => x.NameStock == item).ToList();
+                    
+                    if(q.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    resultList.Add(new ListStocks() { NameStock = q.FirstOrDefault().NameStock, ValueStock = q.FirstOrDefault().ValueStock });
+                }
+
+                //var p = list.Where(x => x.NameStock == sber).ToList();
+
+
+
+                //return Ok(response);
+
+                return resultList;
 
             }
             catch (HttpRequestException e)
@@ -63,7 +130,8 @@ namespace GetStockSRV.Controllers
                 Console.WriteLine("\nException Caught!");
                 Console.WriteLine("Message :{0} ", e.Message);
 
-                return BadRequest(e.Message);
+                //return BadRequest(e.Message);
+                return null;
             }
             
         }
