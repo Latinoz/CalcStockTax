@@ -16,15 +16,14 @@ namespace GetStockSRV.Controllers
         static readonly HttpClient client = new HttpClient();
 
         [HttpGet]
-        public async Task<List<ListStocks>> GetMskStockExch()
+        public async Task<ActionResult<List<ListStocks>>> Get()
         {
+            //DateTime dateFrom = new DateTime(2022, 06, 15);
+            //DateTime current = DateTime.Now;
+            //string pattern = "yyyy-MM-dd";
 
-            DateTime dateFrom = new DateTime(2022, 06, 15);
-            DateTime timeNow = DateTime.Now;
-            string pattern = "yyyy-MM-dd";
-
-            int interval = 10;
-            bool reverse = true;
+            //int interval = 10;
+            //bool reverse = true;
 
             string sber = "SBER";
             string yandex = "YNDX";
@@ -35,20 +34,19 @@ namespace GetStockSRV.Controllers
             List<string> listStk = new List<string>();
             listStk.Add(sber);
             listStk.Add(yandex);
+
             listStk.Add(amd);
             listStk.Add(microsoft);
             listStk.Add(apple);
 
-            string request = string.Format("http://iss.moex.com/iss/engines/stock/markets/shares/securities/{0}/candles.json?from={1}&till={1}&interval={2}&iss.reverse={3}", sber, dateFrom.ToString(pattern), interval.ToString(), reverse.ToString());
+            //string req_test = string.Format("http://iss.moex.com/iss/engines/stock/markets/shares/securities/{0}/candles.json?from={1}&till={1}&interval={2}&iss.reverse={3}", sber, dateFrom.ToString(pattern), interval.ToString(), reverse.ToString());
 
-            string req_test = "https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities.json?iss.meta=off&iss.only=marketdata&marketdata.columns=SECID,LAST";
+            string request = "https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities.json?iss.meta=off&iss.only=marketdata&marketdata.columns=SECID,LAST";
 
             // Call asynchronous network methods in a try/catch block to handle exceptions.
             try
             {
-                //string linehttp = request;
-
-                string linehttp = req_test;
+                string linehttp = request;
 
                 HttpResponseMessage responseHttp = await client.GetAsync(linehttp);
                 responseHttp.EnsureSuccessStatusCode();
@@ -57,10 +55,6 @@ namespace GetStockSRV.Controllers
                 //StockJSON? response = JsonSerializer.Deserialize<StockJSON>(responseBody);                
 
                 OutJSON? response = JsonSerializer.Deserialize<OutJSON>(responseBody);
-
-
-                //Dictionary<string, int?> keyValuePairs = new Dictionary<string, int?>();
-
                 
                 object[][] responseObj = response.marketdata.data;
 
@@ -103,8 +97,8 @@ namespace GetStockSRV.Controllers
 
                 List<ListStocks>? q = new List<ListStocks>();
 
-                foreach (var item in listStk)
-                {
+                    foreach (var item in listStk)
+                    {
                     
                     q = list.Where(x => x.NameStock == item).ToList();
                     
@@ -114,26 +108,22 @@ namespace GetStockSRV.Controllers
                     }
 
                     resultList.Add(new ListStocks() { NameStock = q.FirstOrDefault().NameStock, ValueStock = q.FirstOrDefault().ValueStock });
-                }
+                    }        
 
-                //var p = list.Where(x => x.NameStock == sber).ToList();
+                //return Ok();
 
-
-
-                //return Ok(response);
-
-                return resultList;
+                return Ok(resultList);
 
             }
-            catch (HttpRequestException e)
+            
+            catch (HttpRequestException e)            
             {
                 Console.WriteLine("\nException Caught!");
                 Console.WriteLine("Message :{0} ", e.Message);
 
-                //return BadRequest(e.Message);
-                return null;
+                return BadRequest(e.Message);                
             }
-            
+
         }
     }
 }
