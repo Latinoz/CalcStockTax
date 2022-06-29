@@ -18,28 +18,27 @@ namespace GetStockSRV.Controllers
         [HttpGet]
         public async Task<ActionResult<List<ListStocks>>> Get()
         {
-            //DateTime dateFrom = new DateTime(2022, 06, 15);
-            //DateTime current = DateTime.Now;
-            //string pattern = "yyyy-MM-dd";
+            string sber = "SBER";  //TQBR
+            string yandex = "YNDX";  //TQBR
 
-            //int interval = 10;
-            //bool reverse = true;
+            string amd = "AMD";  //FQBR
+            string microsoft = "MSFT";  //FQBR
+            string apple = "AAPL";  //FQBR
 
-            string sber = "SBER";
-            string yandex = "YNDX";
-            string amd = "AMD";
-            string microsoft = "MSFT";
-            string apple = "AAPL";
+            string vtb_indx = "VTBX";  //TQTF
 
-            List<string> listStk = new List<string>();
-            listStk.Add(sber);
-            listStk.Add(yandex);
+            List<string> listTQBR = new List<string>();
+            listTQBR.Add(sber);
+            listTQBR.Add(yandex);
 
-            listStk.Add(amd);
-            listStk.Add(microsoft);
-            listStk.Add(apple);
+            List<string> listFQBR = new List<string>();
+            listFQBR.Add(amd);
+            listFQBR.Add(microsoft);
+            listFQBR.Add(apple);
 
-            //string req_test = string.Format("http://iss.moex.com/iss/engines/stock/markets/shares/securities/{0}/candles.json?from={1}&till={1}&interval={2}&iss.reverse={3}", sber, dateFrom.ToString(pattern), interval.ToString(), reverse.ToString());
+            List<string> listTQTF = new List<string>();
+            listTQTF.Add(apple);
+
 
             string request = "https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities.json?iss.meta=off&iss.only=marketdata&marketdata.columns=SECID,LAST";
 
@@ -97,7 +96,7 @@ namespace GetStockSRV.Controllers
 
                 List<ListStocks>? q = new List<ListStocks>();
 
-                    foreach (var item in listStk)
+                    foreach (var item in listTQBR)
                     {
                     
                     q = list.Where(x => x.NameStock == item).ToList();
