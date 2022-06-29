@@ -27,6 +27,7 @@ namespace GetStockSRV.Controllers
 
             string vtb_indx = "VTBX";  //TQTF
 
+
             List<string> listTQBR = new List<string>();
             listTQBR.Add(sber);
             listTQBR.Add(yandex);
@@ -39,7 +40,6 @@ namespace GetStockSRV.Controllers
             List<string> listTQTF = new List<string>();
             listTQTF.Add(apple);
 
-
             string request = "https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities.json?iss.meta=off&iss.only=marketdata&marketdata.columns=SECID,LAST";
 
             // Call asynchronous network methods in a try/catch block to handle exceptions.
@@ -51,8 +51,6 @@ namespace GetStockSRV.Controllers
                 responseHttp.EnsureSuccessStatusCode();
                 string responseBody = await responseHttp.Content.ReadAsStringAsync();
 
-                //StockJSON? response = JsonSerializer.Deserialize<StockJSON>(responseBody);                
-
                 OutJSON? response = JsonSerializer.Deserialize<OutJSON>(responseBody);
                 
                 object[][] responseObj = response.marketdata.data;
@@ -60,7 +58,6 @@ namespace GetStockSRV.Controllers
                 List<ListStocks> list = new List<ListStocks>();
 
                 List<ListStocks> resultList = new List<ListStocks>();
-
 
                 foreach (object[]? item in responseObj) 
                 {
@@ -107,16 +104,14 @@ namespace GetStockSRV.Controllers
                     }
 
                     resultList.Add(new ListStocks() { NameStock = q.FirstOrDefault().NameStock, ValueStock = q.FirstOrDefault().ValueStock });
-                    }        
-
-                //return Ok();
+                    }
 
                 return Ok(resultList);
-
             }
             
             catch (HttpRequestException e)            
             {
+                //Здесь сделать логирование
                 Console.WriteLine("\nException Caught!");
                 Console.WriteLine("Message :{0} ", e.Message);
 
