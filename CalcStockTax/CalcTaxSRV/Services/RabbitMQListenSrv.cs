@@ -18,6 +18,8 @@ namespace CalcTaxSRV.Services
                     var body = ea.Body.ToArray();
                     var message = Encoding.UTF8.GetString(body);
 
+                    //Здесь метод расчета налога
+
                     //Здесь сразу отправить в очередь taxsrv.out.queue
                     Send(message);
                     
