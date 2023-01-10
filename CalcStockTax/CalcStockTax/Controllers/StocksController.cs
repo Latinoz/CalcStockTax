@@ -1,9 +1,7 @@
 ﻿using GetStockSRV.Models;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
-using System.Collections;
-using System.Linq;
 using System.Text.Json;
+using GetStockSRV.Services;
 
 
 namespace GetStockSRV.Controllers
@@ -12,6 +10,13 @@ namespace GetStockSRV.Controllers
     [ApiController]
     public class StocksController : ControllerBase
     {
+        private readonly IRabbitMQSrv _mqService;
+        public StocksController(IRabbitMQSrv mqService)
+        {
+            _mqService = mqService;
+        }
+
+
         // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
         static readonly HttpClient client = new HttpClient();
 
@@ -57,6 +62,12 @@ namespace GetStockSRV.Controllers
             result.AddRange(resultTQBR);
             result.AddRange(resultFQBR);
             result.AddRange(resultTQTF);
+
+            //Нельзя отправлять null в параметр (добавить)
+            //Здесь отправка в RabbitMQ            
+
+            //DI
+            _mqService.Send(result);
 
             return Ok(result);
 
@@ -143,6 +154,8 @@ namespace GetStockSRV.Controllers
 
         private async Task<List<ListStocks>> GetListStocksFQBRAsync(string _request, List<string> _listStk)
         {
+            
+
             // Call asynchronous network methods in a try/catch block to handle exceptions.
             try
             {
@@ -219,5 +232,6 @@ namespace GetStockSRV.Controllers
                 return null;
             }
         }
+
     }
 }
