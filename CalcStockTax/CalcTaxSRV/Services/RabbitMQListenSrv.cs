@@ -21,7 +21,7 @@ namespace CalcTaxSRV.Services
                     //Здесь метод расчета налога
 
                     //Здесь сразу отправить в очередь taxsrv.out.queue
-                    Send(message);
+                    //Send(message);
                     
                     Console.WriteLine(" [x] Received {0}", message);
 
