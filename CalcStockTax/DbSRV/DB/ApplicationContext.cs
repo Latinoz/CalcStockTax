@@ -4,9 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DbSRV.DB
 {
     public class ApplicationContext : DbContext
-    {
-        //public ApplicationContext() => Database.EnsureCreated();
-        //
+    {            
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
         : base(options)
         {
