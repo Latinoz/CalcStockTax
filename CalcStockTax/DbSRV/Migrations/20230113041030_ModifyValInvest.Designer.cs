@@ -3,6 +3,7 @@ using System;
 using DbSRV.DB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DbSRV.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230113041030_ModifyValInvest")]
+    partial class ModifyValInvest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,15 +54,15 @@ namespace DbSRV.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<double>("BankFee")
-                        .HasColumnType("double");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("TaxId")
                         .HasColumnType("int");
+
+                    b.Property<double>("Value")
+                        .HasColumnType("double");
 
                     b.HasKey("TariffId");
 
@@ -71,6 +73,9 @@ namespace DbSRV.Migrations
                 {
                     b.Property<int>("TaxId")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("BankFee")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
@@ -87,8 +92,6 @@ namespace DbSRV.Migrations
 
                     b.HasKey("TaxId");
 
-                    b.HasIndex("TariffId");
-
                     b.ToTable("Taxs");
                 });
 
@@ -104,22 +107,6 @@ namespace DbSRV.Migrations
                     b.HasKey("TaxAmountId");
 
                     b.ToTable("TaxAmounts");
-                });
-
-            modelBuilder.Entity("DbSRV.Models.Tax", b =>
-                {
-                    b.HasOne("DbSRV.Models.Tariff", "Tariff")
-                        .WithMany("Taxs")
-                        .HasForeignKey("TariffId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Tariff");
-                });
-
-            modelBuilder.Entity("DbSRV.Models.Tariff", b =>
-                {
-                    b.Navigation("Taxs");
                 });
 #pragma warning restore 612, 618
         }
