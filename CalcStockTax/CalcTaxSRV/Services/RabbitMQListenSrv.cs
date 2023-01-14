@@ -19,8 +19,10 @@ namespace CalcTaxSRV.Services
                     var message = Encoding.UTF8.GetString(body);
 
                     //Здесь метод расчета налога
+                    Calc calc = new Calc();
+                    string msg = calc.GetStocksCalc(message);
 
-                    //Здесь сразу отправить в очередь taxsrv.out.queue
+                    //Здесь получить рузультат Calc и отправить в очередь taxsrv.out.queue
                     //Send(message);
                     
                     Console.WriteLine(" [x] Received {0}", message);

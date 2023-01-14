@@ -9,7 +9,6 @@ builder.Services.AddDbContextPool<ApplicationContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
 
-
 var app = builder.Build();
 
 app.Run();
