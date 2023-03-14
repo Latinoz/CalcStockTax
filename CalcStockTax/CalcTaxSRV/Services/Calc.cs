@@ -6,6 +6,9 @@ namespace CalcTaxSRV.Services
 {
     public class Calc
     {
+        // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
+        static readonly HttpClient client = new HttpClient();
+
         public string GetStocksCalc(string message)
         {
             string result;
@@ -23,7 +26,8 @@ namespace CalcTaxSRV.Services
         {
             string result = null;
 
-            //0) Получить сумму комисии брокера
+            //0) Получить сумму комисии брокера (Инвестор)
+            GetBankFee();            
 
             //1) Получить список купленных акций с их стоимостью и датой покупки из МосБиржи
 
@@ -43,9 +47,39 @@ namespace CalcTaxSRV.Services
 
         }
 
-        public void GetPortfolio()
+        public void GetInvestmentFromDB()
         {
 
+        }
+
+        public async Task<string> GetBankFee()
+        {
+            // Call asynchronous network methods in a try/catch block to handle exceptions.
+            try
+            {
+                string _request = "https://localhost:7163/api/Db/GetBankFee";
+
+                string linehttp = _request;
+
+                HttpResponseMessage responseHttp = await client.GetAsync(linehttp);
+                responseHttp.EnsureSuccessStatusCode();
+                string responseBody = await responseHttp.Content.ReadAsStringAsync();
+
+                BankFee? response = JsonSerializer.Deserialize<BankFee>(responseBody);
+
+                
+
+                return null;
+            }
+
+            catch (HttpRequestException e)
+            {
+                //Здесь сделать логирование
+                Console.WriteLine("\nException Caught!");
+                Console.WriteLine("Message :{0} ", e.Message);
+
+                return null;
+            }
         }
     }
 
