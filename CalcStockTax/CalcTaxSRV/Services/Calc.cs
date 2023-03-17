@@ -54,6 +54,8 @@ namespace CalcTaxSRV.Services
 
         public async Task<string> GetBankFee()
         {
+            string result = null;
+
             // Call asynchronous network methods in a try/catch block to handle exceptions.
             try
             {
@@ -65,14 +67,16 @@ namespace CalcTaxSRV.Services
                 responseHttp.EnsureSuccessStatusCode();
                 string responseBody = await responseHttp.Content.ReadAsStringAsync();
 
-                BankFee? response = JsonSerializer.Deserialize<BankFee>(responseBody);
+                ModelTariff[]? response = JsonSerializer.Deserialize<ModelTariff[]>(responseBody);
 
-                
+                //ModelTariff[] responseObj = response.Property;
 
-                return null;
+                //result = ..
+
+                return result;
             }
-
-            catch (HttpRequestException e)
+            
+            catch(Exception e)
             {
                 //Здесь сделать логирование
                 Console.WriteLine("\nException Caught!");
@@ -80,6 +84,7 @@ namespace CalcTaxSRV.Services
 
                 return null;
             }
+            
         }
     }
 
