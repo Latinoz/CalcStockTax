@@ -1,5 +1,4 @@
 ﻿using CalcTaxSRV.Models;
-using System;
 using System.Text.Json;
 
 namespace CalcTaxSRV.Services
@@ -14,47 +13,91 @@ namespace CalcTaxSRV.Services
             string result;
 
             //Здесь сделать проверку на null
-            List<ListStocks> list = JsonSerializer.Deserialize<List<ListStocks>>(message);
+            List<Stocks> list = JsonSerializer.Deserialize<List<Stocks>>(message);
 
-            result = CalculateTax(list);
+            result = CalcTax(list);
 
             return result;
 
         }
 
-        public string CalculateTax(List<ListStocks> list)
+        //Налог при выводе денег (Физ. Лицо, Резидент РФ)
+        public string CalcTax(List<Stocks> list)
         {
             string result = null;
+
+            List<Stocks> currentPrice = list;
+
+            List<Stocks> taxBase = new List<Stocks>();
 
             //0) Получить сумму комисии брокера (Инвестор)
-            GetBankFee();            
+            float commission = GetBankFee().Result.FirstOrDefault(x => x.tariffId == 1).brokerFee;
 
             //1) Получить список купленных акций с их стоимостью и датой покупки из МосБиржи
+            List<Investment> stocks = GetInvestmentFromDB().Result.ToList();
 
-            //2) Посчитать их общую сумму
+            //2) Посчитать разницу между ценой каждой купленной акции, и текущей ценой акции
+            foreach(var stock in stocks)
+            {
+                // ???
+            }
 
-            //2.1) Получить сумму комисиии брокера
-            //   (сумма всех купленных акций из МосБиржи - комиссия брокера)
+            //3) Если разница(дельта) у акции отрицательная, то игнорировать, если положительная
+            //то добавить в налогооблагаемую базу
 
-            //3) Получить общую сумму стоимости купленных акций из БД
+            //4) Вычесть 13% из налогооблагаемой базы
 
-            //4) Получить сумму комисиии брокера
-            //   (сумма всех купленных акций - комиссия брокера)
-
-            //5) 
 
             return result;
 
         }
 
-        public void GetInvestmentFromDB()
+        //Налог с дивидендов (Физ. Лицо, Резидент РФ)
+        public string CalcDividendsTax(List<Stocks> list)
         {
+            string result = null;     
+            
+            ////
+
+            return result;
 
         }
 
-        public async Task<string> GetBankFee()
+        public async Task<Investment[]> GetInvestmentFromDB()
         {
-            string result = null;
+            Investment[] result = null;
+
+            // Call asynchronous network methods in a try/catch block to handle exceptions.
+            try
+            {
+                string _request = "https://localhost:7163/api/Db/GetInvestment";
+
+                string linehttp = _request;
+
+                HttpResponseMessage responseHttp = await client.GetAsync(linehttp);
+                responseHttp.EnsureSuccessStatusCode();
+                string responseBody = await responseHttp.Content.ReadAsStringAsync();
+
+                Investment[]? response = JsonSerializer.Deserialize<Investment[]> (responseBody);
+
+                result = response;
+
+                return result;
+            }
+
+            catch (Exception e)
+            {
+                //Здесь сделать логирование
+                Console.WriteLine("\nException Caught!");
+                Console.WriteLine("Method: GetInvestmentFromDB(), Message :{0} ", e.Message);
+
+                return null;
+            }
+        }
+
+        public async Task<ModelTariff[]> GetBankFee()
+        {
+            ModelTariff[] result = null;
 
             // Call asynchronous network methods in a try/catch block to handle exceptions.
             try
@@ -69,9 +112,7 @@ namespace CalcTaxSRV.Services
 
                 ModelTariff[]? response = JsonSerializer.Deserialize<ModelTariff[]>(responseBody);
 
-                //ModelTariff[] responseObj = response.Property;
-
-                //result = ..
+                result = response;
 
                 return result;
             }
@@ -80,7 +121,7 @@ namespace CalcTaxSRV.Services
             {
                 //Здесь сделать логирование
                 Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Message :{0} ", e.Message);
+                Console.WriteLine("Method: GetBankFee(), Message :{0} ", e.Message);
 
                 return null;
             }

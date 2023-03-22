@@ -21,7 +21,7 @@ namespace GetStockSRV.Controllers
         static readonly HttpClient client = new HttpClient();
 
         [HttpGet]
-        public async Task<ActionResult<List<ListStocks>>> Get()
+        public async Task<ActionResult<List<Stocks>>> Get()
         {
             string sber = "SBER";  //TQBR
             string yandex = "YNDX";  //TQBR
@@ -52,13 +52,13 @@ namespace GetStockSRV.Controllers
             string requestTQTF = "https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQTF/securities.json?iss.meta=off&iss.only=securities&securities.columns=SECID,PREVWAPRICE";
 
 
-            List<ListStocks> resultTQBR = await GetListStocksTQBRAsync(requestTQBR, listTQBR);
+            List<Stocks> resultTQBR = await GetListStocksTQBRAsync(requestTQBR, listTQBR);
 
-            List<ListStocks> resultFQBR = await GetListStocksFQBRAsync(requestFQBR, listFQBR);
+            List<Stocks> resultFQBR = await GetListStocksFQBRAsync(requestFQBR, listFQBR);
 
-            List<ListStocks> resultTQTF = await GetListStocksFQBRAsync(requestTQTF, listTQTF);
+            List<Stocks> resultTQTF = await GetListStocksFQBRAsync(requestTQTF, listTQTF);
 
-            List <ListStocks> result = new List<ListStocks>();
+            List <Stocks> result = new List<Stocks>();
             result.AddRange(resultTQBR);
             result.AddRange(resultFQBR);
             result.AddRange(resultTQTF);
@@ -73,7 +73,7 @@ namespace GetStockSRV.Controllers
 
         }
 
-        private async Task<List<ListStocks>> GetListStocksTQBRAsync(string _request, List<string> _listStk)
+        private async Task<List<Stocks>> GetListStocksTQBRAsync(string _request, List<string> _listStk)
         {
             // Call asynchronous network methods in a try/catch block to handle exceptions.
             try
@@ -88,9 +88,9 @@ namespace GetStockSRV.Controllers
 
                 object[][] responseObj = response.marketdata.data;
 
-                List<ListStocks> list = new List<ListStocks>();
+                List<Stocks> list = new List<Stocks>();
                 
-                List<ListStocks> resultList = new List<ListStocks>();
+                List<Stocks> resultList = new List<Stocks>();
 
                 foreach (object[]? item in responseObj)
                 {
@@ -120,11 +120,11 @@ namespace GetStockSRV.Controllers
                     }
 
 
-                    list.Add(new ListStocks() { NameStock = _name, ValueStock = _value });
+                    list.Add(new Stocks() { NameStock = _name, ValueStock = _value });
 
                 }
 
-                List<ListStocks>? q = new List<ListStocks>();
+                List<Stocks>? q = new List<Stocks>();
 
                 foreach (var item in _listStk)
                 {
@@ -136,7 +136,7 @@ namespace GetStockSRV.Controllers
                         continue;
                     }
 
-                    resultList.Add(new ListStocks() { NameStock = q.FirstOrDefault().NameStock, ValueStock = q.FirstOrDefault().ValueStock });
+                    resultList.Add(new Stocks() { NameStock = q.FirstOrDefault().NameStock, ValueStock = q.FirstOrDefault().ValueStock });
                 }
 
                 return resultList;
@@ -152,7 +152,7 @@ namespace GetStockSRV.Controllers
             }
         }
 
-        private async Task<List<ListStocks>> GetListStocksFQBRAsync(string _request, List<string> _listStk)
+        private async Task<List<Stocks>> GetListStocksFQBRAsync(string _request, List<string> _listStk)
         {
             
 
@@ -169,9 +169,9 @@ namespace GetStockSRV.Controllers
 
                 object[][] responseObj = response.securities.data;
 
-                List<ListStocks> list = new List<ListStocks>();
+                List<Stocks> list = new List<Stocks>();
 
-                List<ListStocks> resultList = new List<ListStocks>();
+                List<Stocks> resultList = new List<Stocks>();
 
                 foreach (object[]? item in responseObj)
                 {
@@ -201,11 +201,11 @@ namespace GetStockSRV.Controllers
                     }
 
 
-                    list.Add(new ListStocks() { NameStock = _name, ValueStock = _value });
+                    list.Add(new Stocks() { NameStock = _name, ValueStock = _value });
 
                 }
 
-                List<ListStocks>? q = new List<ListStocks>();
+                List<Stocks>? q = new List<Stocks>();
 
                 foreach (var item in _listStk)
                 {
@@ -217,7 +217,7 @@ namespace GetStockSRV.Controllers
                         continue;
                     }
 
-                    resultList.Add(new ListStocks() { NameStock = q.FirstOrDefault().NameStock, ValueStock = q.FirstOrDefault().ValueStock });
+                    resultList.Add(new Stocks() { NameStock = q.FirstOrDefault().NameStock, ValueStock = q.FirstOrDefault().ValueStock });
                 }
 
                 return resultList;

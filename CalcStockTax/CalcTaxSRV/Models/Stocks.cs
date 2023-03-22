@@ -1,6 +1,6 @@
-﻿namespace GetStockSRV.Models
+﻿namespace CalcTaxSRV.Models
 {
-    public class ListStocks
+    public class Stocks
     {
         public string? NameStock { get; set; }
 
