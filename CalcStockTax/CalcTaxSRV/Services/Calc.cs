@@ -28,7 +28,7 @@ namespace CalcTaxSRV.Services
 
             List<Stocks> currentPrice = list;
 
-            List<Stocks> taxBase = new List<Stocks>();
+            List<float> taxBase = new List<float>();
 
             //0) Получить сумму комисии брокера (Инвестор)
             float commission = GetBankFee().Result.FirstOrDefault(x => x.tariffId == 1).brokerFee;
@@ -39,14 +39,30 @@ namespace CalcTaxSRV.Services
             //2) Посчитать разницу между ценой каждой купленной акции, и текущей ценой акции
             foreach(var stock in stocks)
             {
-                // ???
+                //Получаем из списка stock первое значние из списка купленных акций
+                //stock;
+
+                //Находим текущее значение в списке currentPrice
+                Stocks? selectable = currentPrice.Where(x => x.NameStock == stock.stockName).FirstOrDefault();
+
+                //Вычитаем из цены купленной акции и текущей цены данной акции
+                float intermediate = stock.buyPrice - (float)Convert.ToDouble(selectable.ValueStock);
+
+                //3) Если разница(дельта) у акции отрицательная, то игнорировать, если положительная
+                //то добавить и вычесть 13%
+                if(intermediate > 0)
+                {
+                    //Вычесть комисию
+                    float tax = intermediate - commission;
+
+                    //Вычесть 13%
+
+                    taxBase.Add(tax);
+                }
             }
 
-            //3) Если разница(дельта) у акции отрицательная, то игнорировать, если положительная
-            //то добавить в налогооблагаемую базу
-
-            //4) Вычесть 13% из налогооблагаемой базы
-
+            //4) Суммировать налог           
+            
 
             return result;
 
