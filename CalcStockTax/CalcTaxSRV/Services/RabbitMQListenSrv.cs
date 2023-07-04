@@ -20,12 +20,12 @@ namespace CalcTaxSRV.Services
 
                     //Здесь метод расчета налога
                     Calc calc = new Calc();
-                    string msg = calc.GetStocksCalc(message);
+                    string result = calc.GetStocksCalc(message);
 
                     //Здесь получить рузультат Calc и отправить в очередь taxsrv.out.queue
-                    //Send(message);
+                    Send(result);
                     
-                    Console.WriteLine(" [x] Received {0}", message);
+                    Console.WriteLine(" [x] Tax NDFL: {0}", result);
 
                 };
                 channel.BasicConsume(queue: "stocksrv.out.queue",

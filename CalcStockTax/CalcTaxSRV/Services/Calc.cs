@@ -37,38 +37,47 @@ namespace CalcTaxSRV.Services
             List<Investment> stocks = GetInvestmentFromDB().Result.ToList();
 
             //2) Посчитать разницу между ценой каждой купленной акции, и текущей ценой акции
-            foreach(var stock in stocks)
+
+            //Получаем из списка stock, первое значние из купленных акций
+            foreach (var stock in stocks)
             {
-                //Получаем из списка stock первое значние из списка купленных акций
-                //stock;
-
                 //Находим текущее значение в списке currentPrice
-                Stocks? selectable = currentPrice.Where(x => x.NameStock == stock.stockName).FirstOrDefault();
+                Stocks? current = currentPrice.Where(x => x.NameStock == stock.stockName).FirstOrDefault();
 
-                //Вычитаем из цены купленной акции и текущей цены данной акции
-                float intermediate = stock.buyPrice - (float)Convert.ToDouble(selectable.ValueStock);
-
-                //3) Если разница(дельта) у акции отрицательная, то игнорировать, если положительная
-                //то добавить и вычесть 13%
-                if(intermediate > 0)
+                if(current.ValueStock != null)
                 {
-                    //Вычесть комисию
-                    float tax = intermediate - commission;
+                    //Вычитаем из текущей цены акции, цену купленной акции 
+                    float difference = (float)Convert.ToDouble(current.ValueStock) - stock.buyPrice;
+                    
+                    //3) Если разница(дельта) у акции отрицательная, то игнорировать, если положительная
+                    //то добавить и вычесть 13%
+                    if (difference > 0)
+                    {
+                        //Вычесть комисию
+                        float priceWithoutCommis = difference - commission;
 
-                    //Вычесть 13%
+                        //ToDo Процент брать из БД
+                        int tax = 13;
 
-                    taxBase.Add(tax);
+                        //Вычесть %
+                        //ToDo Сделать вычитание процента, в зависимости от того, какая налоговая ставка у налогоплательщика (сейчас только 13%)
+                        float ndfl = (float)Math.Round((double)(priceWithoutCommis * tax / 100));
+
+                        taxBase.Add(ndfl);
+                    }
+                    
                 }
+                
             }
 
             //4) Суммировать налог           
-            
+            result = taxBase.Sum().ToString();
 
             return result;
 
         }
 
-        //Налог с дивидендов (Физ. Лицо, Резидент РФ)
+        //ToDo Налог с дивидендов (Физ. Лицо, Резидент РФ)
         public string CalcDividendsTax(List<Stocks> list)
         {
             string result = null;     
@@ -135,7 +144,7 @@ namespace CalcTaxSRV.Services
             
             catch(Exception e)
             {
-                //Здесь сделать логирование
+                //ToDo Сделать логирование
                 Console.WriteLine("\nException Caught!");
                 Console.WriteLine("Method: GetBankFee(), Message :{0} ", e.Message);
 
