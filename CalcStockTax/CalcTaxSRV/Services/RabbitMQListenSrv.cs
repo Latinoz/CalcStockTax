@@ -25,7 +25,7 @@ namespace CalcTaxSRV.Services
                     //Здесь получить рузультат Calc и отправить в очередь taxsrv.out.queue
                     Send(result);
                     
-                    Console.WriteLine(" [x] Tax NDFL: {0}", result);
+                    Console.WriteLine(" [x] Current Tax NDFL for pay: {0}", result);
 
                 };
                 channel.BasicConsume(queue: "stocksrv.out.queue",

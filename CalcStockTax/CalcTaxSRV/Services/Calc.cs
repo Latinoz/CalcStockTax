@@ -34,7 +34,7 @@ namespace CalcTaxSRV.Services
             float commission = GetBankFee().Result.FirstOrDefault(x => x.tariffId == 1).brokerFee;
 
             //1) Получить список купленных акций с их стоимостью и датой покупки из МосБиржи
-            List<Investment> stocks = GetInvestmentFromDB().Result.ToList();
+            List<Investment> stocks = GetInvestment().Result.ToList();
 
             //2) Посчитать разницу между ценой каждой купленной акции, и текущей ценой акции
 
@@ -78,17 +78,40 @@ namespace CalcTaxSRV.Services
         }
 
         //ToDo Налог с дивидендов (Физ. Лицо, Резидент РФ)
-        public string CalcDividendsTax(List<Stocks> list)
+        public async Task<Stocks[]> GetTax()
         {
-            string result = null;     
-            
-            ////
+            Stocks[] result = null;
 
-            return result;
+            // Call asynchronous network methods in a try/catch block to handle exceptions.
+            try
+            {
+                string _request = "https://localhost:7163/api/Db/GetTaxs";
+
+                string linehttp = _request;
+
+                HttpResponseMessage responseHttp = await client.GetAsync(linehttp);
+                responseHttp.EnsureSuccessStatusCode();
+                string responseBody = await responseHttp.Content.ReadAsStringAsync();
+
+                Stocks[]? response = JsonSerializer.Deserialize<Stocks[]>(responseBody);
+
+                result = response;
+
+                return result;
+            }
+
+            catch (Exception e)
+            {
+                //ToDo Сделать логирование
+                Console.WriteLine("\nException Caught!");
+                Console.WriteLine("Method: GetBankFee(), Message :{0} ", e.Message);
+
+                return null;
+            }
 
         }
 
-        public async Task<Investment[]> GetInvestmentFromDB()
+        public async Task<Investment[]> GetInvestment()
         {
             Investment[] result = null;
 
@@ -127,7 +150,7 @@ namespace CalcTaxSRV.Services
             // Call asynchronous network methods in a try/catch block to handle exceptions.
             try
             {
-                string _request = "https://localhost:7163/api/Db/GetBankFee";
+                string _request = "https://localhost:7163/api/Db/GetBankTariffs";
 
                 string linehttp = _request;
 

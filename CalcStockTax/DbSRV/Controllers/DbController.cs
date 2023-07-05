@@ -15,25 +15,31 @@ namespace DbSRV.Controllers
             db = context;
         }
 
-        [HttpGet]
-        public string Index()
-        {
-            return "Hello DB";
-        }
+        //[HttpGet]
+        //public string Index()
+        //{
+        //    return "Hello DB";
+        //}
 
 
         [HttpGet("[action]")]
         public async Task<ActionResult<List<Investment>>> GetInvestment()
         {
             List<Investment> result = db.Investments.ToList();
-
             return Ok(result);
         }
 
         [HttpGet("[action]")]
-        public async Task<ActionResult<List<Tariff>>> GetBankFee()
+        public async Task<ActionResult<List<Tariff>>> GetBankTariffs()
         {
             List<Tariff> result = db.Tariffs.ToList();
+            return Ok(result);
+        }
+
+        [HttpGet("[action]")]
+        public async Task<ActionResult<List<Tax>>> GetTaxs()
+        {
+            List<Tax> result = db.Taxs.ToList();
             return Ok(result);
         }
     }
