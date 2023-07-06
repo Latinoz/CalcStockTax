@@ -30,8 +30,11 @@ namespace CalcTaxSRV.Services
 
             List<float> taxBase = new List<float>();
 
-            //0) Получить сумму комисии брокера (Инвестор)
-            float commission = GetBankFee().Result.FirstOrDefault(x => x.tariffId == 1).brokerFee;
+            //0) Получить сумму комисии брокера (Сейчас только тариф - "Инвестор")
+            float commission = GetBrokerFee().Result.FirstOrDefault(x => x.tariffId == 1).brokerFee;
+
+            //ToDo Сделать подстановку процента, в зависимости от того, какая налоговая ставка у налогоплательщика (сейчас только 13%)
+            int tax = GetTax().Result.FirstOrDefault(y => y.taxValue == 13).taxValue;
 
             //1) Получить список купленных акций с их стоимостью и датой покупки из МосБиржи
             List<Investment> stocks = GetInvestment().Result.ToList();
@@ -54,20 +57,14 @@ namespace CalcTaxSRV.Services
                     if (difference > 0)
                     {
                         //Вычесть комисию
-                        float priceWithoutCommis = difference - commission;
+                        float priceWithoutCommis = difference - commission;                        
 
-                        //ToDo Процент брать из БД
-                        int tax = 13;
-
-                        //Вычесть %
-                        //ToDo Сделать вычитание процента, в зависимости от того, какая налоговая ставка у налогоплательщика (сейчас только 13%)
+                        //Вычесть %                        
                         float ndfl = (float)Math.Round((double)(priceWithoutCommis * tax / 100));
 
                         taxBase.Add(ndfl);
-                    }
-                    
-                }
-                
+                    }                    
+                }                
             }
 
             //4) Суммировать налог           
@@ -78,9 +75,9 @@ namespace CalcTaxSRV.Services
         }
 
         //ToDo Налог с дивидендов (Физ. Лицо, Резидент РФ)
-        public async Task<Stocks[]> GetTax()
+        public async Task<ModelTax[]> GetTax()
         {
-            Stocks[] result = null;
+            ModelTax[] result = null;
 
             // Call asynchronous network methods in a try/catch block to handle exceptions.
             try
@@ -93,7 +90,7 @@ namespace CalcTaxSRV.Services
                 responseHttp.EnsureSuccessStatusCode();
                 string responseBody = await responseHttp.Content.ReadAsStringAsync();
 
-                Stocks[]? response = JsonSerializer.Deserialize<Stocks[]>(responseBody);
+                ModelTax[]? response = JsonSerializer.Deserialize<ModelTax[]>(responseBody);
 
                 result = response;
 
@@ -104,11 +101,10 @@ namespace CalcTaxSRV.Services
             {
                 //ToDo Сделать логирование
                 Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Method: GetBankFee(), Message :{0} ", e.Message);
+                Console.WriteLine("Method: GetTax(), Message :{0} ", e.Message);
 
                 return null;
             }
-
         }
 
         public async Task<Investment[]> GetInvestment()
@@ -143,7 +139,7 @@ namespace CalcTaxSRV.Services
             }
         }
 
-        public async Task<ModelTariff[]> GetBankFee()
+        public async Task<ModelTariff[]> GetBrokerFee()
         {
             ModelTariff[] result = null;
 
@@ -169,12 +165,10 @@ namespace CalcTaxSRV.Services
             {
                 //ToDo Сделать логирование
                 Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Method: GetBankFee(), Message :{0} ", e.Message);
+                Console.WriteLine("Method: GetBrokerFee(), Message :{0} ", e.Message);
 
                 return null;
-            }
-            
+            }            
         }
     }
-
 }

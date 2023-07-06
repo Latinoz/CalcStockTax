@@ -15,13 +15,6 @@ namespace DbSRV.Controllers
             db = context;
         }
 
-        //[HttpGet]
-        //public string Index()
-        //{
-        //    return "Hello DB";
-        //}
-
-
         [HttpGet("[action]")]
         public async Task<ActionResult<List<Investment>>> GetInvestment()
         {
