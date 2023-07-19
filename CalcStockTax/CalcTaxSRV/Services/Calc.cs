@@ -1,4 +1,5 @@
 ﻿using CalcTaxSRV.Models;
+using System.Globalization;
 using System.Text.Json;
 
 namespace CalcTaxSRV.Services
@@ -50,7 +51,7 @@ namespace CalcTaxSRV.Services
                 if(current.ValueStock != null)
                 {
                     //Вычитаем из текущей цены акции, цену купленной акции 
-                    float difference = (float)Convert.ToDouble(current.ValueStock) - stock.buyPrice;
+                    float difference = float.Parse(current.ValueStock, CultureInfo.InvariantCulture.NumberFormat) - stock.buyPrice;
                     
                     //3) Если разница(дельта) у акции отрицательная, то игнорировать, если положительная
                     //то добавить и вычесть 13%
