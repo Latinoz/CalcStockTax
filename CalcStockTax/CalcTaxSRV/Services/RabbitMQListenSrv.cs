@@ -17,15 +17,11 @@ namespace CalcTaxSRV.Services
                 {
                     var body = ea.Body.ToArray();
                     var message = Encoding.UTF8.GetString(body);
-
-                    //Здесь метод расчета налога
+                    
                     Calc calc = new Calc();
                     string result = calc.GetStocksCalc(message);
-
-                    //Здесь получить рузультат Calc и отправить в очередь taxsrv.out.queue
-                    Send(result);
                     
-                    Console.WriteLine(" [x] Current Tax NDFL for pay: {0}", result);
+                    Send(result);                    
 
                 };
                 channel.BasicConsume(queue: "stocksrv.out.queue",
