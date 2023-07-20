@@ -1,37 +1,28 @@
 ﻿using GetStockSRV.Models;
-using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using GetStockSRV.Services;
 
-
-namespace GetStockSRV.Controllers
+namespace GetStockSRV.Services
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class StocksController : ControllerBase
+    public class GetActionService
     {
         private readonly IRabbitMQSrv _mqService;
-        public StocksController(IRabbitMQSrv mqService)
+        public GetActionService(IRabbitMQSrv mqService)
         {
             _mqService = mqService;
         }
 
-
-        // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
         static readonly HttpClient client = new HttpClient();
 
-        [HttpGet]
-        public async Task<ActionResult<List<Stocks>>> Get()
+        public async Task<List<Stocks>> DoGet()
         {
-            string sber = "SBER";  //TQBR
-            string yandex = "YNDX";  //TQBR
+            string sber = "SBER";
+            string yandex = "YNDX";
 
-            string amd = "AMD-RM";  //FQBR
-            string microsoft = "MSFT-RM";  //FQBR
-            string apple = "AAPL-RM";  //FQBR
+            string amd = "AMD-RM";
+            string microsoft = "MSFT-RM";
+            string apple = "AAPL-RM";
 
-            string vtb_indx = "VTBX";  //TQTF
-
+            string vtb_indx = "VTBX";
 
             List<string> listTQBR = new List<string>();
             listTQBR.Add(sber);
@@ -46,41 +37,33 @@ namespace GetStockSRV.Controllers
             listTQTF.Add(vtb_indx);
 
             string requestTQBR = "https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities.json?iss.meta=off&iss.only=marketdata&marketdata.columns=SECID,LAST";
-
             string requestFQBR = "https://iss.moex.com/iss/engines/stock/markets/foreignshares/boards/FQBR/securities.json?iss.dp=comma&iss.meta=off&iss.only=securities&securities.columns=SECID,PREVWAPRICE";
-
             string requestTQTF = "https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQTF/securities.json?iss.meta=off&iss.only=securities&securities.columns=SECID,PREVWAPRICE";
 
-
             List<Stocks> resultTQBR = await GetListStocksTQBRAsync(requestTQBR, listTQBR);
-
             List<Stocks> resultFQBR = await GetListStocksFQBRAsync(requestFQBR, listFQBR);
-
             List<Stocks> resultTQTF = await GetListStocksFQBRAsync(requestTQTF, listTQTF);
 
-            List <Stocks> result = new List<Stocks>();
+            List<Stocks> result = new List<Stocks>();
             result.AddRange(resultTQBR);
             result.AddRange(resultFQBR);
             result.AddRange(resultTQTF);
 
-            //Нельзя отправлять null в параметр (добавить)
-            //Здесь отправка в RabbitMQ            
+            //ToDo: Нельзя отправлять null в параметр (добавить)            
 
-            //DI
             _mqService.Send(result);
 
-            return Ok(result);
-
-        }
+            return result;
+        }        
 
         private async Task<List<Stocks>> GetListStocksTQBRAsync(string _request, List<string> _listStk)
         {
-            // Call asynchronous network methods in a try/catch block to handle exceptions.
             try
             {
                 string linehttp = _request;
 
                 HttpResponseMessage responseHttp = await client.GetAsync(linehttp);
+
                 responseHttp.EnsureSuccessStatusCode();
                 string responseBody = await responseHttp.Content.ReadAsStringAsync();
 
@@ -89,7 +72,7 @@ namespace GetStockSRV.Controllers
                 object[][] responseObj = response.marketdata.data;
 
                 List<Stocks> list = new List<Stocks>();
-                
+
                 List<Stocks> resultList = new List<Stocks>();
 
                 foreach (object[]? item in responseObj)
@@ -119,16 +102,13 @@ namespace GetStockSRV.Controllers
                         _value = listObj.ElementAt(1).ToString();
                     }
 
-
                     list.Add(new Stocks() { NameStock = _name, ValueStock = _value });
-
                 }
 
                 List<Stocks>? q = new List<Stocks>();
 
                 foreach (var item in _listStk)
                 {
-
                     q = list.Where(x => x.NameStock == item).ToList();
 
                     if (q.Count == 0)
@@ -144,7 +124,7 @@ namespace GetStockSRV.Controllers
 
             catch (HttpRequestException e)
             {
-                //Здесь сделать логирование
+                //ToDo: Сделать логирование
                 Console.WriteLine("\nException Caught!");
                 Console.WriteLine("Message :{0} ", e.Message);
 
@@ -154,9 +134,6 @@ namespace GetStockSRV.Controllers
 
         private async Task<List<Stocks>> GetListStocksFQBRAsync(string _request, List<string> _listStk)
         {
-            
-
-            // Call asynchronous network methods in a try/catch block to handle exceptions.
             try
             {
                 string linehttp = _request;
@@ -170,7 +147,6 @@ namespace GetStockSRV.Controllers
                 object[][] responseObj = response.securities.data;
 
                 List<Stocks> list = new List<Stocks>();
-
                 List<Stocks> resultList = new List<Stocks>();
 
                 foreach (object[]? item in responseObj)
@@ -200,16 +176,13 @@ namespace GetStockSRV.Controllers
                         _value = listObj.ElementAt(1).ToString();
                     }
 
-
                     list.Add(new Stocks() { NameStock = _name, ValueStock = _value });
-
                 }
 
                 List<Stocks>? q = new List<Stocks>();
 
                 foreach (var item in _listStk)
                 {
-
                     q = list.Where(x => x.NameStock == item).ToList();
 
                     if (q.Count == 0)
@@ -225,13 +198,12 @@ namespace GetStockSRV.Controllers
 
             catch (HttpRequestException e)
             {
-                //Здесь сделать логирование
+                //ToDo: Сделать логирование
                 Console.WriteLine("\nException Caught!");
                 Console.WriteLine("Message :{0} ", e.Message);
 
                 return null;
             }
         }
-
     }
 }

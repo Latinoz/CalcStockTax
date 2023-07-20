@@ -48,7 +48,7 @@ namespace CalcTaxSRV.Services
                 //Находим текущее значение в списке currentPrice
                 Stocks? current = currentPrice.Where(x => x.NameStock == stock.stockName).FirstOrDefault();
 
-                if(current.ValueStock != null)
+                if(current != null && current.ValueStock != null)
                 {
                     //Вычитаем из текущей цены акции, цену купленной акции 
                     float difference = float.Parse(current.ValueStock, CultureInfo.InvariantCulture.NumberFormat) - stock.buyPrice;
