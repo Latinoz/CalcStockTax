@@ -5,9 +5,9 @@ using GetStockSRV.Controllers;
 
 namespace GetStockSRV.Services
 {
-    public class GetSrockJobHostedService : BackgroundService
+    public class GetStockJobHostedService : BackgroundService
     {   
-        public GetSrockJobHostedService() 
+        public GetStockJobHostedService() 
         { 
 
         }

@@ -9,9 +9,10 @@ namespace GetStockSRV.Controllers
     public class StocksController : ControllerBase
     {
         private readonly IRabbitMQSrv _mqService;
+
         public StocksController(IRabbitMQSrv mqService)
         {
-            _mqService = mqService;
+            _mqService = mqService;            
         }
 
         [HttpGet("[action]")]
@@ -19,17 +20,17 @@ namespace GetStockSRV.Controllers
         {
             List<Stocks> result = new GetActionService(_mqService).DoGet().Result;
 
-            return Ok(result);            
+            return Ok(result);
         }
 
         [HttpPost("[action]")]
-        public IActionResult Start()
-        {
+        public async Task<IActionResult> Start()
+        {            
             return Ok();
         }        
 
         [HttpPost("[action]")]
-        public IActionResult Stop()
+        public async Task<IActionResult> Stop()
         {
             return Ok();
         }
