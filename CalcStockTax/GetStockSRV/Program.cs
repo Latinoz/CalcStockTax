@@ -6,7 +6,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<IRabbitMQSrv, RabbitMQSrv>();
+builder.Services.AddSingleton<IRabbitMQSrv, RabbitMQSrv>();
+builder.Services.AddScoped<IGetActionService, GetActionService>();
 
 var app = builder.Build();
 

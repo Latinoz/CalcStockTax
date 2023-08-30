@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace GetStockSRV.Services
 {
-    public class GetActionService 
+    public class GetActionService : IGetActionService
     {
         private readonly IRabbitMQSrv _mqService;
 

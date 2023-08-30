@@ -7,19 +7,19 @@ namespace GetStockSRV.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class StocksController : ControllerBase
-    {
-        private readonly IRabbitMQSrv _mqService;        
+    {        
+        private readonly IGetActionService _actionService;
         static bool count = true;
 
-        public StocksController(IRabbitMQSrv mqService)
-        {
-            _mqService = mqService;            
+        public StocksController(IGetActionService actionService)        {
+            
+            _actionService = actionService;
         }
 
         [HttpGet("[action]")]
         public async Task<ActionResult<List<Stocks>>> Get()
         {
-            List<Stocks> result = new GetActionService(_mqService).DoGet().Result;
+            List<Stocks> result = _actionService.DoGet().Result;
 
             return Ok(result);
         }
@@ -31,7 +31,7 @@ namespace GetStockSRV.Controllers
 
             while (count == true)
             {
-                result = new GetActionService(_mqService).DoGet().Result;
+                result = _actionService.DoGet().Result;
 
                 await Task.Delay(5000);
             }                       
