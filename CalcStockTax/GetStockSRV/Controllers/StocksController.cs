@@ -8,7 +8,8 @@ namespace GetStockSRV.Controllers
     [ApiController]
     public class StocksController : ControllerBase
     {
-        private readonly IRabbitMQSrv _mqService;
+        private readonly IRabbitMQSrv _mqService;        
+        static bool count = true;
 
         public StocksController(IRabbitMQSrv mqService)
         {
@@ -25,13 +26,24 @@ namespace GetStockSRV.Controllers
 
         [HttpPost("[action]")]
         public async Task<IActionResult> Start()
-        {            
-            return Ok();
+        {
+            List<Stocks> result = null;
+
+            while (count == true)
+            {
+                result = new GetActionService(_mqService).DoGet().Result;
+
+                await Task.Delay(5000);
+            }                       
+
+            return Ok(result);
         }        
 
         [HttpPost("[action]")]
         public async Task<IActionResult> Stop()
-        {
+        {         
+            await Task.Run(() => {count = false;});
+            
             return Ok();
         }
     }

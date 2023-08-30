@@ -3,9 +3,10 @@ using System.Text.Json;
 
 namespace GetStockSRV.Services
 {
-    public class GetActionService
+    public class GetActionService 
     {
         private readonly IRabbitMQSrv _mqService;
+
         public GetActionService(IRabbitMQSrv mqService)
         {
             _mqService = mqService;
@@ -41,6 +42,7 @@ namespace GetStockSRV.Services
             string requestTQTF = "https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQTF/securities.json?iss.meta=off&iss.only=securities&securities.columns=SECID,PREVWAPRICE";
 
             List<Stocks> resultTQBR = await GetListStocksTQBRAsync(requestTQBR, listTQBR);
+            
             List<Stocks> resultFQBR = await GetListStocksFQBRAsync(requestFQBR, listFQBR);
             List<Stocks> resultTQTF = await GetListStocksFQBRAsync(requestTQTF, listTQTF);
 
