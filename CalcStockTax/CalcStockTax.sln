@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalcTaxSRV", "CalcTaxSRV\Ca
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbSRV", "DbSRV\DbSRV.csproj", "{6070ABF7-6355-4114-BD64-A95112418C3E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientConsoleApp", "ClientConsoleApp\ClientConsoleApp.csproj", "{91CC319D-9C52-4928-AE46-1AC6A6A27CE1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{6070ABF7-6355-4114-BD64-A95112418C3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6070ABF7-6355-4114-BD64-A95112418C3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6070ABF7-6355-4114-BD64-A95112418C3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91CC319D-9C52-4928-AE46-1AC6A6A27CE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91CC319D-9C52-4928-AE46-1AC6A6A27CE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91CC319D-9C52-4928-AE46-1AC6A6A27CE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91CC319D-9C52-4928-AE46-1AC6A6A27CE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,7 +11,7 @@ builder.Services.AddDbContextPool<ApplicationContext>(options =>
 });
 
 builder.Services.AddControllers();
-builder.Services.AddHostedService<RabbitMQHostedService>();
+//builder.Services.AddHostedService<RabbitMQHostedService>();  //Если нужно включить/выключить получение итога калькуляции из брокера RabbitMQ
 
 var app = builder.Build();
 
