@@ -1,6 +1,11 @@
 ﻿using DbSRV.DB;
 using DbSRV.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace DbSRV.Controllers
 {
@@ -14,7 +19,7 @@ namespace DbSRV.Controllers
         {
             db = context;
         }
-
+              
         [HttpGet("[action]")]
         public async Task<ActionResult<List<Investment>>> GetInvestment()
         {
