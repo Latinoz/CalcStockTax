@@ -1,13 +1,22 @@
 ﻿using CalcTaxSRV.Models;
+using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
+using System.Net.Http.Headers;
+using System.Numerics;
 using System.Text.Json;
 
 namespace CalcTaxSRV.Services
 {
     public class Calc
-    {
-        // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
+    {        
         static readonly HttpClient client = new HttpClient();
+
+        static Task<string> token;
+
+        public Calc() 
+        { 
+            token = GetToken();
+        }
 
         public string GetStocksCalc(string message)
         {
@@ -22,10 +31,10 @@ namespace CalcTaxSRV.Services
 
         }
 
-        //Налог при выводе денег (Физ. Лицо, Резидент РФ)
+        //Налог при продаже акций (Физ. Лицо, Резидент РФ)
         public string CalcTax(List<Stocks> list)
         {
-            string result = null;
+            string result;
 
             List<Stocks> currentPrice = list;
 
@@ -78,18 +87,14 @@ namespace CalcTaxSRV.Services
         //ToDo Налог с дивидендов (Физ. Лицо, Резидент РФ)
         public async Task<ModelTax[]> GetTax()
         {
-            ModelTax[] result = null;
-
-            // Call asynchronous network methods in a try/catch block to handle exceptions.
+            ModelTax[] result;
+            
             try
             {
                 string _request = "https://localhost:7163/api/Db/GetTaxs";
 
-                string linehttp = _request;
-
-                HttpResponseMessage responseHttp = await client.GetAsync(linehttp);
-                responseHttp.EnsureSuccessStatusCode();
-                string responseBody = await responseHttp.Content.ReadAsStringAsync();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token.Result);
+                string? responseBody = await client.GetStringAsync(_request);
 
                 ModelTax[]? response = JsonSerializer.Deserialize<ModelTax[]>(responseBody);
 
@@ -110,18 +115,14 @@ namespace CalcTaxSRV.Services
 
         public async Task<Investment[]> GetInvestment()
         {
-            Investment[] result = null;
-
-            // Call asynchronous network methods in a try/catch block to handle exceptions.
+            Investment[] result;               
+            
             try
             {
                 string _request = "https://localhost:7163/api/Db/GetInvestment";
 
-                string linehttp = _request;
-
-                HttpResponseMessage responseHttp = await client.GetAsync(linehttp);
-                responseHttp.EnsureSuccessStatusCode();
-                string responseBody = await responseHttp.Content.ReadAsStringAsync();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token.Result);
+                string? responseBody = await client.GetStringAsync(_request);                
 
                 Investment[]? response = JsonSerializer.Deserialize<Investment[]> (responseBody);
 
@@ -142,18 +143,14 @@ namespace CalcTaxSRV.Services
 
         public async Task<ModelTariff[]> GetBrokerFee()
         {
-            ModelTariff[] result = null;
-
-            // Call asynchronous network methods in a try/catch block to handle exceptions.
+            ModelTariff[] result;
+            
             try
             {
                 string _request = "https://localhost:7163/api/Db/GetBankTariffs";
 
-                string linehttp = _request;
-
-                HttpResponseMessage responseHttp = await client.GetAsync(linehttp);
-                responseHttp.EnsureSuccessStatusCode();
-                string responseBody = await responseHttp.Content.ReadAsStringAsync();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token.Result);
+                string? responseBody = await client.GetStringAsync(_request);
 
                 ModelTariff[]? response = JsonSerializer.Deserialize<ModelTariff[]>(responseBody);
 
@@ -170,6 +167,40 @@ namespace CalcTaxSRV.Services
 
                 return null;
             }            
+        }
+
+        [HttpPost]
+        public async Task<string> GetToken()
+        {
+            try
+            {
+                string _request = "https://localhost:7163/security/createToken";                
+
+                Person login = new Person
+                {
+                    UserName = "joydip",
+                    Password = "joydip123"
+                };
+
+                string? token;
+
+                HttpResponseMessage response = await client.PostAsJsonAsync(_request, login);
+                using (var contentStream = await response.Content.ReadAsStreamAsync())
+                {
+                    token = await JsonSerializer.DeserializeAsync<string>(contentStream);
+                }                              
+
+                return token;
+            }
+
+            catch (Exception e)
+            {
+                //ToDo Сделать логирование
+                Console.WriteLine("\nException Caught!");
+                Console.WriteLine("Method: GetToken(), Message :{0} ", e.Message);
+
+                return null;
+            }
         }
     }
 }

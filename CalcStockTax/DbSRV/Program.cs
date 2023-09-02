@@ -50,7 +50,6 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.Map("/security/getMessage", [Authorize] (HttpContext context) => $"Hello World!");
 app.MapPost("/security/createToken",
 [AllowAnonymous] (User user) =>
 {

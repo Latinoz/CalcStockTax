@@ -19,7 +19,8 @@ namespace DbSRV.Controllers
         {
             db = context;
         }
-              
+
+        [Authorize]
         [HttpGet("[action]")]
         public async Task<ActionResult<List<Investment>>> GetInvestment()
         {
@@ -27,6 +28,7 @@ namespace DbSRV.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpGet("[action]")]
         public async Task<ActionResult<List<Tariff>>> GetBankTariffs()
         {
@@ -34,6 +36,7 @@ namespace DbSRV.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpGet("[action]")]
         public async Task<ActionResult<List<Tax>>> GetTaxs()
         {

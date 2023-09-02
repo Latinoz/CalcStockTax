@@ -6,6 +6,8 @@ namespace CalcTaxSRV.Services
 {
     public class RabbitMQListenSrv
     {
+        Calc calc = new Calc();        
+
         public void Receive()
         {            
             var factory = new ConnectionFactory() { HostName = "localhost" };
@@ -16,9 +18,8 @@ namespace CalcTaxSRV.Services
                 consumer.Received += (model, ea) =>
                 {
                     var body = ea.Body.ToArray();
-                    var message = Encoding.UTF8.GetString(body);
+                    var message = Encoding.UTF8.GetString(body);                    
                     
-                    Calc calc = new Calc();
                     string result = calc.GetStocksCalc(message);
                     
                     Send(result);                    
