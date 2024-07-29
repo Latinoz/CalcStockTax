@@ -1,5 +1,5 @@
 # CalcStockTax
-Calculate stock tax
+Calculate tax on stocks
 
 ![alt text](CalcStockTax/GetStockSRV/Images/diagramm_v6.png)
 
